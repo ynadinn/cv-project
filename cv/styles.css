@@ -1,0 +1,44 @@
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #f5e6ca;
+    margin: 0;
+    padding: 0;
+}
+.cv-container {
+    display: flex;
+    max-width: 900px;
+    margin: 20px auto;
+    background: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.sidebar {
+    background: #d4b996;
+    padding: 20px;
+    width: 30%;
+    color: #fff;
+}
+.profile-img {
+    width: 200px; 
+    height: auto;
+    display: block;
+    border-radius: 50%;
+    margin: auto;
+}
+.content {
+    padding: 20px;
+    width: 70%;
+}
+h1 {
+    font-size: 35px;
+    color: #333;
+}
+h2 {
+    color: #555;
+}
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+li {
+    margin: 5px 0;
+}
