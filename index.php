@@ -68,15 +68,44 @@ class UserSystem {
             $_SESSION['nama'] = $_POST['nama'];
             $_SESSION['ttl'] = $_POST['ttl'];
             $_SESSION['pendidikan'] = $_POST['pendidikan'];
+
+            // Proses upload foto
+            if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
+                $uploadDir = "uploads/";
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0777, true);
+                }
+
+                $fileTmpPath = $_FILES['foto']['tmp_name'];
+                $fileName = basename($_FILES['foto']['name']);
+                $fileSize = $_FILES['foto']['size'];
+                $fileType = mime_content_type($fileTmpPath);
+                $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+
+                if (in_array($fileType, $allowedTypes) && $fileSize <= 3 * 1024 * 1024) { // Maks 3MB
+                    $newFileName = uniqid() . "_" . $fileName;
+                    $destPath = $uploadDir . $newFileName;
+
+                    if (move_uploaded_file($fileTmpPath, $destPath)) {
+                        $_SESSION['foto'] = $destPath;
+                    } else {
+                        echo "<p style='color:red;'>Gagal mengunggah foto!</p>";
+                    }
+                } else {
+                    echo "<p style='color:red;'>Format foto tidak didukung atau ukuran terlalu besar! (Maks 3MB)</p>";
+                }
+            }
+
             header("Location: index.php?page=cv");
             exit();
         }
 
         echo "<h2>Form Data Diri</h2>
-              <form method='POST'>
+              <form method='POST' enctype='multipart/form-data'>
                 <input type='text' name='nama' placeholder='Nama Lengkap' required>
                 <input type='text' name='ttl' placeholder='Tempat, Tanggal Lahir' required>
                 <input type='text' name='pendidikan' placeholder='Riwayat Pendidikan' required>
+                <input type='file' name='foto' accept='image/*' required>
                 <button type='submit'>Simpan & Lihat CV</button>
               </form>
               <br>
@@ -88,9 +117,13 @@ class UserSystem {
               <p><strong>Nama:</strong> " . htmlspecialchars($_SESSION['nama']) . "</p>
               <p><strong>Tempat, Tanggal Lahir:</strong> " . htmlspecialchars($_SESSION['ttl']) . "</p>
               <p><strong>Riwayat Pendidikan:</strong> " . htmlspecialchars($_SESSION['pendidikan']) . "</p>
-              <p><strong>Email:</strong> " . htmlspecialchars($_SESSION['userEmail']) . "</p>
-              <br>
-              <a href='index.php?page=logout'>Logout</a>";
+              <p><strong>Email:</strong> " . htmlspecialchars($_SESSION['userEmail']) . "</p>";
+
+        if (!empty($_SESSION['foto'])) {
+            echo "<p><strong>Foto:</strong><br> <img src='" . htmlspecialchars($_SESSION['foto']) . "' width='150' height='150' style='border-radius: 50%;'></p>";
+        }
+
+        echo "<br><a href='index.php?page=logout'>Logout</a>";
     }
 
     private function login($email, $password) {
